@@ -10,7 +10,7 @@ FN=foo-${TEST_ID}
 RESOURCE_NS=default # Change to test-specific namespace once we support namespaced CRDs
 FUNCTION_NS=${FUNCTION_NAMESPACE:-fission-function}
 BUILDER_NS=fission-builder
-LIST_ANNOTATIONS='go-template={{range $key,$value := .metadata.annotations}}{{$key}}: {{$value}}{{"\n"}}{{end}}'
+LIST_ANNOTATIONS=$'go-template={{range $key,$value := .metadata.annotations}}{{$key}}: {{$value}}{{"\\n"}}{{end}}'
 
 # fs
 TEST_DIR=/tmp/${TEST_ID}
@@ -84,17 +84,14 @@ kind: Environment
 metadata:
   name: ${ENV}
   namespace: ${RESOURCE_NS}
+  annotations:
+    ${ANNOTATION_KEY}: ${ANNOTATION_BUILDER_VALUE}
 spec:
   builder:
     command: build
     image: gcr.io/fission-ci/python-env-builder:test
-    annotations:
-      ${ANNOTATION_KEY}: ${ANNOTATION_BUILDER_VALUE}
-
   runtime:
     image: gcr.io/fission-ci/python-env:test
-    annotations:
-      ${ANNOTATION_KEY}: ${ANNOTATION_RUNTIME_VALUE}
   version: 2
   poolsize: 1
 EOM
